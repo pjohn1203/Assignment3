@@ -23,21 +23,29 @@ import android.view.MenuItem;
 import android.provider.Settings;
 import android.os.Bundle;
 import android.widget.TextView;
+import java.lang.Math;
+
 
 import static android.content.Context.SENSOR_SERVICE;
 
 
-/**
- * Created by luca on 7/5/2015.
- */
 
+/* -------------------------------------------------------------------------
+
+Used Luca's existing Services and NotifyResultCallback to run a service after 30 seconds of wait
+
+
+
+
+
+------------------------------------------------------------------------------ */
 
 public class MyServiceTask implements Runnable, SensorEventListener {
 
     public static final String LOG_TAG = "MyService";
     private boolean running;
     private Context context;
-    //private TextView xText, yText, zText;
+
     private Sensor mySensor;
     private SensorManager SM;
     private int didItMove = 0;
@@ -62,14 +70,24 @@ public class MyServiceTask implements Runnable, SensorEventListener {
         initDate = Calendar.getInstance().getTime();
         Date tempDate = Calendar.getInstance().getTime();
         long difftime = 0;
-        /*
+
+        //resets the textViews
+        didItMove = 0;
+        notifyResultCallback(didItMove);
+
+
+        //Waits 30 seconds by comparing currentdate to the initDate
+        //which is initialized right when the service runs
+
         while(difftime < 30){
             tempDate = Calendar.getInstance().getTime();
             difftime = (tempDate.getTime() - initDate.getTime())/1000;
             System.out.println(difftime);
-        }*/
+        }
 
-        
+
+
+
         running = true;
         Random rand = new Random();
         while (running) {
@@ -91,13 +109,6 @@ public class MyServiceTask implements Runnable, SensorEventListener {
 
             SM.registerListener(this, mySensor, SensorManager.SENSOR_DELAY_NORMAL);
 
-
-            // Generate a random number.
-            int r = rand.nextInt(100);
-            // Sends it to the UI thread in MainActivity (if MainActivity
-            // is running).
-            Log.i(LOG_TAG, "Sending random number: " + r);
-            //notifyResultCallback(didItMove);
 
 
         }
@@ -171,18 +182,26 @@ public class MyServiceTask implements Runnable, SensorEventListener {
     }
 
 
+
+    /*-----------------------------------------------------------------------------------*/
+
     //OnSensorChanges checks if there is significant x or y acceleration.
+    //if there is a change in x or y greater than 10, then notify 1 to change textViews
+    //only when the service is called again is the phone allowed to set didItMove back
+    //to 0, so once it is moved then it stays moved.
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
         double xVal = sensorEvent.values[0];
         double yVal = sensorEvent.values[1];
+        Math.abs(xVal);
+        Math.abs(yVal);
         currentDate = Calendar.getInstance().getTime();
         long diffTime = (currentDate.getTime() - initDate.getTime())/1000;
 
 
-        if(xVal >= 2.5 || yVal >= 2.5){
+        if(xVal >= 10 || yVal >= 10){
             didItMove = 1;
             if(diffTime >= 30 && didItMove == 1) {
                 notifyResultCallback(didItMove);
@@ -192,10 +211,15 @@ public class MyServiceTask implements Runnable, SensorEventListener {
 
     }
 
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
+
+
+    /*--------------------------------------------------------------------------------------*/
+
 
     public interface ResultCallback {
         void onResultReady(ServiceResult result);

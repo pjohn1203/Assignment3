@@ -57,7 +57,6 @@ public class MyService extends Service {
 
 
 
-        long diffTime = 0;
 
 
 

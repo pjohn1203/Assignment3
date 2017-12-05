@@ -23,6 +23,15 @@ import android.widget.TextView;
 
 import com.dealfaro.luca.serviceexample.MyService.MyBinder;
 
+/*
+
+- added startService to Luca's code for the clear button
+- added stopService to unbind and stop, the finish the app
+
+
+
+ */
+
 public class MainActivity extends ActionBarActivity
     implements com.dealfaro.luca.serviceexample.MyServiceTask.ResultCallback {
 
@@ -139,16 +148,22 @@ public class MainActivity extends ActionBarActivity
                 // Displays it.
                 if (result != null) {
                     Log.i(LOG_TAG, "Displaying: " + result.intValue);
+
                     if(result.intValue == 1) {
                         TextView tv = (TextView) findViewById(R.id.number_view);
                         tv.setText("The phone has moved");
+
                     }
 
-                    TextView tv2 = (TextView)findViewById(R.id.textView);
-                    tv2.setText(Integer.toString(result.intValue));
 
-                    TextView tv3 = (TextView)findViewById(R.id.textView2);
-                    tv3.setText(Integer.toString(result.intValue));
+                        TextView tv2 = (TextView)findViewById(R.id.textView);
+                        tv2.setText(Integer.toString(result.intValue));
+
+                        TextView tv3 = (TextView)findViewById(R.id.textView2);
+                        tv3.setText(Integer.toString(result.intValue));
+
+
+
 
 
 
@@ -174,6 +189,9 @@ public class MainActivity extends ActionBarActivity
     stopService unbinds and stops the service then closes the app
     */
 
+
+
+
     public void startService(View view){
 
         unbindService(serviceConnection);
@@ -190,10 +208,12 @@ public class MainActivity extends ActionBarActivity
         serviceBound = false;
         Intent intent = new Intent(this, MyService.class);
         stopService(intent);
-        //finish();
-        //System.exit(0);
+        finish();
+        System.exit(0);
 
     }
+
+
 
 
     /*--------------------------------------------------------------------------- */
